@@ -3,6 +3,7 @@
 # swiss-stationboard
 Custom lovelace card for Home Assistant Lovelace UI.
 Swiss public transport stationboard. Shows connections from one or multiple stations. 
+
 ![Stationboard "Schüpfen"](https://github.com/neuhausf/lovelace-swiss-stationboard/blob/main/img/stationboard-1.png?raw=true "Stationboard Schüpfen")
 
 ## Information
