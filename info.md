@@ -1,34 +1,33 @@
-[![](https://img.shields.io/github/release/neuhausf/hacs-swiss-public-transport-mod/all.svg)](https://github.com/neuhausf/hacs-swiss-public-transport-mod/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
 # swiss-stationboard
-
-Swiss public transport stationboard
+Custom lovelace card for Home Assistant Lovelace UI.
+Swiss public transport stationboard. Shows connections from one or multiple stations. 
+![Stationboard "Schüpfen"](https://github.com/neuhausf/lovelace-swiss-stationboard/blob/main/img/stationboard-1.png?raw=true "Stationboard Schüpfen")
 
 ## Information
 
-Note: Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first.
+_**Warning:** Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first._
 
 ## Configuration
 
-- Got to HACS
-- Search for "swiss-stationboard"
+- Go to HACS
+- Add a custom repo: https://github.com/neuhausf/lovelace-swiss-stationboard
+- Install the lovelace card
 
-Add a new sensor to your configuration.yaml:
+Add a new custom card to your Dashboard:
 
 ```YAML
-sensor:
-  - platform: swiss_public_transport_mod
-    name: Schüpfen
-    limit: 4
-    stationboard:
-    - Schüpfen
+type: custom:swiss-stationboard
+name: Abfahrt
+entity:
+  - sensor.schupfen
 ```
 
 ## Privacy 
 
-This integration uses :
+This integration uses:
 
-https://github.com/agners/swiss-public-transport-card for geolocaliation if you don't set you post code
-the changes made in the pull request by @agners: https://github.com/home-assistant/core/pull/30715
-and some own code to adapt the visualization.
+- https://github.com/agners/swiss-public-transport-card 
+- the changes made in the pull request by @agners: https://github.com/home-assistant/core/pull/30715
+- and some own code to adapt the visualization.
