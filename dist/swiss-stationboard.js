@@ -128,7 +128,6 @@ class SwissPublicTransportCard extends LitElement {
       const time = departure.toLocaleString('de-CH', { hour: 'numeric', minute: 'numeric'});// moment(departure).format("HH:mm");
 
       const totalseconds = Math.floor((now - departure) / 1000) - (delayed ? delay * 60 : 0);
-      console.log("totalSeconds: " + totalseconds);
       var eta = undefined;
 
       if (totalseconds > 0)
