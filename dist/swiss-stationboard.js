@@ -121,7 +121,7 @@ class SwissPublicTransportCard extends LitElement {
         (journey["number"].startsWith(category) ? "" : journey["number"]);
 
       const delay = journey["delay"];
-      const delayed = delay > 0 ? "verspätet" : "";
+      const delayed = delay > 0 ? "delayed" : "";
       const departure = new Date(journey["departure"]);
 
       // Format departure time in 24h format.
