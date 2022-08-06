@@ -70,7 +70,11 @@ class SwissPublicTransportCard extends LitElement {
                   class="shrink ${departure.delayed}"
                   style="text-align:right;"
                 >
-                 Gleis ${departure.platform}
+                ${departure.platform
+                  ? html`
+                  Gleis ${departure.platform}`
+                  : html``
+                 }
                 </td>
               </tr>
             `
