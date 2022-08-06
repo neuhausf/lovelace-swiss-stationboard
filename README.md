@@ -21,6 +21,7 @@ Add a new custom card to your Dashboard:
 ```YAML
 type: custom:swiss-stationboard
 name: Abfahrt
+hide_title: true
 entity:
   - sensor.schupfen
 ```
