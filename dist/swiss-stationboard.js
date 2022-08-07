@@ -30,7 +30,9 @@ class SwissPublicTransportCard extends LitElement {
     this._update_departures(state);
     return html`
       <ha-card id="hacard">
-        <div class="card-header">
+        ${this._config.hide_title
+          ? html``
+          : html`<div class="card-header">
           ${state.attributes.friendly_name}
           ${this._config.show_last_changed
             ? html`
@@ -38,7 +40,9 @@ class SwissPublicTransportCard extends LitElement {
               'N/A'
             </div>`
             : html``
-           }
+          }`
+        }     
+         
         </div>
         <table>
           <tbody id="departuretable">
@@ -70,7 +74,11 @@ class SwissPublicTransportCard extends LitElement {
                   class="shrink ${departure.delayed}"
                   style="text-align:right;"
                 >
-                 Gleis ${departure.platform}
+                ${departure.platform
+                  ? html`
+                  Gleis ${departure.platform}`
+                  : html``
+                 }
                 </td>
               </tr>
             `
