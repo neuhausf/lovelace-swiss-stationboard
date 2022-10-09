@@ -9,6 +9,7 @@ Swiss public transport stationboard. Shows connections from one or multiple stat
 ## Information
 
 _**Warning:** Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first._
+Note that the current implementation is based on https://pypi.org/project/python-opendata-transport/ which currently doesn't return *delays* (property is there, but  the underlying API-call to transport.opendata.ch doesn't return anything).
 
 ## Configuration
 
