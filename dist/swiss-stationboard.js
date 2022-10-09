@@ -112,7 +112,7 @@ class SwissPublicTransportCard extends LitElement {
   //  this.last_changed = moment.duration(moment(state.last_changed).diff(now)).humanize(true);
 
 
-    const departure_countdown = 60 * (this._config.departure_countdown === undefined ? 15 : 0);
+    const departure_countdown = 60 * (this._config.departure_countdown === undefined ? 15 : this._config.departure_countdown);
 
     if (!state.attributes["departures"]) {
       this.departures = [];
