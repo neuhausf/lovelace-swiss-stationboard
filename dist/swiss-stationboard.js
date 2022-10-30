@@ -68,7 +68,7 @@ class SwissPublicTransportCard extends LitElement {
                   class="shrink ${departure.delayed}"
                   style="text-align:right;"
                 >
-                 ${departure.delayed?html`(+ ${departure.delay}min)`:html``} ${departure.eta}&nbsp;
+                 ${departure.delay > 0?html`(+${departure.delay}')`:html``} ${departure.eta}&nbsp;
                 </td>
                 <td
                   class="shrink ${departure.delayed}"
@@ -129,7 +129,7 @@ class SwissPublicTransportCard extends LitElement {
         (journey["number"].startsWith(category) ? "" : journey["number"]);
 
       const delay = journey["delay"];
-      const delayed = delay > 0 ? "delayed" : "";
+      const delayed = delay > 1 ? "delayed" : "";
       const departure = new Date(journey["departure"]);
 
       // Format departure time in 24h format.
