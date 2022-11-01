@@ -214,7 +214,9 @@ class SwissPublicTransportCard extends LitElement {
       span.line {
         font-weight: bold;
         font-size: 0.9em;
-        padding: 3px 8px 2px 8px;
+        padding: 1px 3px 1px;
+        display: block;
+        text-align: center;
         background-color: #888;
         margin-right: 0.0em;
       }
