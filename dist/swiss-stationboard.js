@@ -76,7 +76,7 @@ class SwissPublicTransportCard extends LitElement {
                 >
                 ${departure.platform
                   ? html`
-                  Gleis ${departure.platform}`
+                  ${this._config.platform_name ? html`${this._config.platform_name}&nbsp`:html``}${departure.platform}`
                   : html``
                  }
                 </td>
