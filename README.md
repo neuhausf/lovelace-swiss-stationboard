@@ -23,6 +23,7 @@ Add a new custom card to your Dashboard:
 type: custom:swiss-stationboard
 name: Abfahrt
 hide_title: true
+platform_name: Gl.
 entity:
   - sensor.schupfen
 ```
