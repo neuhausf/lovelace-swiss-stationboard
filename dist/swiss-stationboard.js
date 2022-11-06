@@ -113,6 +113,7 @@ class SwissPublicTransportCard extends LitElement {
 
 
     const departure_countdown = 60 * (this._config.departure_countdown === undefined ? 15 : this._config.departure_countdown);
+    const departure_offset = 60 * (this._config.departure_offset === undefined ? 0 : this._config.departure_offset);
 
     if (!state.attributes["departures"]) {
       this.departures = [];
@@ -152,18 +153,20 @@ class SwissPublicTransportCard extends LitElement {
           eta += seconds + "″";
       }
 
-      departures.push({
-        linename: linename,
-        exactname: exactname,
-        departure_time: time,
-        departure: departure,
-        destination: destination,
-        category: category,
-        delay: delay,
-        delayed: delayed,
-        eta: eta,
-        platform: journey["platform"]
-      });
+      if (absoluttotalseconds >= departure_offset) {
+        departures.push({
+          linename: linename,
+          exactname: exactname,
+          departure_time: time,
+          departure: departure,
+          destination: destination,
+          category: category,
+          delay: delay,
+          delayed: delayed,
+          eta: eta,
+          platform: journey["platform"]
+        });
+      }
     }
 
     this.departures = departures;
