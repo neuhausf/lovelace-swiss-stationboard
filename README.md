@@ -28,6 +28,15 @@ entity:
   - sensor.schupfen
 ```
 
+### Card settings
+
+* `departure_offset`: an optional number of X minutes (defaults to 0).  If greater than zero minutes, it hides all next departures within those minutes.
+* `departure_countdown`: an optional number of minutes (defaults to 15).  All departures within this time window will have a countdown displayed onscreen.
+* `show_seconds`: if true, will show seconds in addition to minutes within the countdown.
+* `entity`: which entity (from *swiss-public-transport-mod*) to use as the data source.
+* `hide_title`: hides the title if true.
+* `show_last_changed`: if true, shows the last time that the underlying data changed.
+
 ## Privacy 
 
 This integration uses:
