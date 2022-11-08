@@ -30,7 +30,7 @@ entity:
 
 ### Card settings
 
-* `departure_offset`: an optional number of X minutes (defaults to 0).  If greater than zero minutes, it hides all next departures within those minutes.
+* `departure_offset`: an optional number of X minutes (defaults to 0).  If greater than zero minutes, it hides all next departures within those minutes.  Note that the filtering is on the frontend only - so this could lead to an empty stationboard if the sensor doesn't provide enough journeys (`limit` setting of the [stationboard-sensor](https://github.com/neuhausf/swiss-public-transport-mod))
 * `departure_countdown`: an optional number of minutes (defaults to 15).  All departures within this time window will have a countdown displayed onscreen.
 * `show_seconds`: if true, will show seconds in addition to minutes within the countdown.
 * `entity`: which entity (from *swiss-public-transport-mod*) to use as the data source.
