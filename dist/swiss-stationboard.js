@@ -127,7 +127,7 @@ class SwissPublicTransportCard extends LitElement {
       const category = journey["category"];
       const linename =
         category +
-        ((journey["number"] && journey["number"].startsWith(category)) ? "" : (journey["number"] ? journey["number"] : ""));
+        ((journey["number"] && journey["number"].startsWith(category)) ? "" : (journey["number"] || ""));
 
       const delay = journey["delay"];
       const delayed = delay > 1 ? "delayed" : "";
