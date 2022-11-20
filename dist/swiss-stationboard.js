@@ -154,18 +154,20 @@ class SwissPublicTransportCard extends LitElement {
       }
 
       if (absoluttotalseconds >= departure_offset) {
-        departures.push({
-          linename: linename,
-          exactname: exactname,
-          departure_time: time,
-          departure: departure,
-          destination: destination,
-          category: category,
-          delay: delay,
-          delayed: delayed,
-          eta: eta,
-          platform: journey["platform"]
-        });
+        if ((this._config.category == null) || (this._config.category == category)) {
+          departures.push({
+            linename: linename,
+            exactname: exactname,
+            departure_time: time,
+            departure: departure,
+            destination: destination,
+            category: category,
+            delay: delay,
+            delayed: delayed,
+            eta: eta,
+            platform: journey["platform"]
+          });
+        }
       }
     }
 
