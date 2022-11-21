@@ -23,6 +23,7 @@ Add a new custom card to your Dashboard:
 type: custom:swiss-stationboard
 name: Abfahrt
 hide_title: true
+category: B|^ICE$|S
 platform_name: Gl.
 entity:
   - sensor.schupfen
@@ -35,6 +36,7 @@ entity:
 * `show_seconds`: if true, will show seconds in addition to minutes within the countdown.
 * `entity`: which entity (from *swiss-public-transport-mod*) to use as the data source.
 * `hide_title`: hides the title if true.
+* `category`: regular expression to filter by categories (S-train, Bus, ICE, ...).  i.e. to include multiple categories use the OR operator: `category: B|^ICE$|S`
 * `show_last_changed`: if true, shows the last time that the underlying data changed.
 
 ## Privacy 
