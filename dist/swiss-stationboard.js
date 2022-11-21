@@ -152,8 +152,11 @@ class SwissPublicTransportCard extends LitElement {
         if (this._config.show_seconds)
           eta += seconds + "″";
       }
+      
+      // allow category filtering by regex (S-Bahn, Bus, ...)
+      var categoryRegexp = new RegExp(this._config.category || "");
 
-      if (absoluttotalseconds >= departure_offset) {
+      if (categoryRegexp.test(category) && absoluttotalseconds >= departure_offset) {
         departures.push({
           linename: linename,
           exactname: exactname,
