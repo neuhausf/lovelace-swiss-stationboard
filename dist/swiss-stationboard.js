@@ -147,10 +147,17 @@ class SwissPublicTransportCard extends LitElement {
       {
         const minutes = Math.floor(absoluttotalseconds / 60);
         const seconds = absoluttotalseconds % 60;
-        eta = "in ";
-        eta += minutes + ((minutes > 1) ? " mins" : " min");
+        eta = "in";
+        var minsStr = (minutes > 1) ? " mins" : " min";
+        minsStr = this._config.minutes_label ? this._config.minutes_label : minsStr;
+        var secsStr = "″";
+        var secsStr = this._config.seconds_label ? this._config.seconds_label : minsStr;
+        eta += " " + minutes + minsStr;
         if (this._config.show_seconds)
-          eta += seconds + "″";
+          eta += " " + seconds + secsStr;
+        // Corner case 0m 0s
+        if (eta == "in")
+          eta = "";
       }
       
       // allow category filtering by regex (S-Bahn, Bus, ...)
