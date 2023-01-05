@@ -25,6 +25,10 @@ entity:
   - sensor.schupfen
 ```
 
+## Settings documentation
+
+The settings are documented here: https://github.com/neuhausf/lovelace-swiss-stationboard
+
 ## Privacy 
 
 This integration uses:
