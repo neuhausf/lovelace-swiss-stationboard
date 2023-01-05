@@ -148,7 +148,9 @@ class SwissPublicTransportCard extends LitElement {
         const minutes = Math.floor(absoluttotalseconds / 60);
         const seconds = absoluttotalseconds % 60;
         eta = "in ";
-        eta += minutes + ((minutes > 1) ? " mins" : " min");
+        var minsStr = ((minutes > 1) ? "mins" : "min";
+        minsStr = this._config.minutes_string ? this._config.minutes_string : minsStr;
+        eta += minutes + " " + minsStr);
         if (this._config.show_seconds)
           eta += seconds + "″";
       }
