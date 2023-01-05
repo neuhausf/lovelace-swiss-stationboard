@@ -38,8 +38,8 @@ entity:
 * `hide_title`: hides the title if true.
 * `category`: regular expression to filter by categories (S-train, Bus, ICE, ...).  i.e. to include multiple categories use the OR operator: `category: B|^ICE$|S`
 * `show_last_changed`: if true, shows the last time that the underlying data changed.
-* `minutes_string`: the string denoting minutes in the ETA field.  Defaults to ` min` or ` mins` depending on how many minutes are left.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
-* `seconds_string`: the string denoting seconds in the ETA field.  Defaults to `″`.  The same note about whitespace that `minutes_string` has applies here too.
+* `minutes_label`: the string denoting minutes in the ETA field.  Defaults to ` min` or ` mins` depending on how many minutes are left.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
+* `seconds_label`: the string denoting seconds in the ETA field.  Defaults to `″`.  The same note about whitespace that `minutes_string` has applies here too.
 
 ## Privacy 
 
