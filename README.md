@@ -23,6 +23,7 @@ Add a new custom card to your Dashboard:
 type: custom:swiss-stationboard
 name: Abfahrt
 hide_title: true
+platform_filter: 21
 category: B|^ICE$|S
 platform_name: Gl.
 entity:
@@ -36,7 +37,8 @@ entity:
 * `show_seconds`: if true, will show seconds in addition to minutes within the countdown.
 * `entity`: which entity (from *swiss-public-transport-mod*) to use as the data source.
 * `hide_title`: hides the title if true.
-* `category`: regular expression to filter by categories (S-train, Bus, ICE, ...).  i.e. to include multiple categories use the OR operator: `category: B|^ICE$|S`
+* `category`: optional regular expression to filter by categories (S-train, Bus, ICE, ...).  i.e. to include multiple categories use the OR operator: `category: B|^ICE$|S`
+* `platform_filter`: optional regular expression to filter by platforms (3, 21, ...).  i.e. to include multiple platforms use the OR operator: `platform_filter: 3|21`
 * `show_last_changed`: if true, shows the last time that the underlying data changed.
 * `minutes_label`: the string denoting minutes in the ETA field.  Defaults to ` min` or ` mins` depending on how many minutes are left.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
 * `seconds_label`: the string denoting seconds in the ETA field.  Defaults to `″`.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
