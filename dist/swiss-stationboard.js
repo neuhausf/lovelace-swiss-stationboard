@@ -125,6 +125,7 @@ class SwissPublicTransportCard extends LitElement {
       const exactname = journey["name"];
 
       const category = journey["category"];
+      const platform = journey["platform"];
       const linename =
         category +
         ((journey["number"] && journey["number"].startsWith(category)) ? "" : (journey["number"] || ""));
@@ -162,8 +163,9 @@ class SwissPublicTransportCard extends LitElement {
       
       // allow category filtering by regex (S-Bahn, Bus, ...)
       var categoryRegexp = new RegExp(this._config.category || "");
-
-      if (categoryRegexp.test(category) && absoluttotalseconds >= departure_offset) {
+      var plaformFilterRegexp = new RegExp(this._config.platform_filter || "");
+      
+      if (categoryRegexp.test(category) && plaformFilterRegexp.test(platform) && absoluttotalseconds >= departure_offset) {
         departures.push({
           linename: linename,
           exactname: exactname,
@@ -174,7 +176,7 @@ class SwissPublicTransportCard extends LitElement {
           delay: delay,
           delayed: delayed,
           eta: eta,
-          platform: journey["platform"]
+          platform: platform
         });
       }
     }
