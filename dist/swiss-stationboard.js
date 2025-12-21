@@ -121,7 +121,7 @@ class SwissPublicTransportCard extends LitElement {
     }
 
     for (const journey of state.attributes["departures"]) {
-      const destination = journey["to"];
+      const destination = this._applyNameReplacements(journey["to"]);
       const exactname = journey["name"];
 
       const category = journey["category"];
@@ -201,6 +201,49 @@ class SwissPublicTransportCard extends LitElement {
       setInterval(() => this.requestUpdate(), 1000);
     else
       setInterval(() => this.requestUpdate(), 10000);
+  }
+  
+  _escapeRegExp(str) {
+    return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  
+  _applyNameReplacements(text) {
+    if (text === undefined || text === null) return text;
+  
+    const cfg = this._config?.name_replacement;
+    if (!cfg) return text;
+  
+    let result = String(text);
+  
+    // Variant: Mapping-Objekt { "Aeroporto": "Airprt", ... }
+    if (!Array.isArray(cfg) && typeof cfg === "object") {
+      for (const [from, to] of Object.entries(cfg)) {
+        if (from === "" || from === undefined || from === null) continue;
+        const re = new RegExp(this._escapeRegExp(from), "g");
+        result = result.replace(re, String(to ?? ""));
+      }
+      return result;
+    }
+  
+    // Variant: List [{from,to}, ...] or [["from","to"], ...]
+    if (Array.isArray(cfg)) {
+      for (const rule of cfg) {
+        if (!rule) continue;
+  
+        const from = rule.from ?? rule[0];
+        const to = rule.to ?? rule[1];
+  
+        if (from === "" || from === undefined || from === null) continue;
+        const isRegex = rule.regex === true;
+
+        const re = isRegex
+          ? new RegExp(from, rule.flags ?? "g")
+          : new RegExp(this._escapeRegExp(from), "g");
+        result = result.replace(re, String(to ?? ""));
+      }
+    }
+  
+    return result;
   }
 
   static get styles() {
