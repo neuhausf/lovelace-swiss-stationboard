@@ -1,15 +1,15 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
 # swiss-stationboard
-Custom lovelace card for Home Assistant Lovelace UI.
-Swiss public transport stationboard. Shows connections from one or multiple stations. 
+Custom lovelace card for Home Assistant Lovelace UI.  
+Swiss public transport stationboard. Shows connections from one or multiple stations.
 
 ![Stationboard "Schüpfen"](https://github.com/neuhausf/lovelace-swiss-stationboard/blob/main/img/stationboard-1.png?raw=true "Stationboard Schüpfen")
 
 ## Information
 
-_**Warning:** Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first._
-Note that the current implementation is based on https://pypi.org/project/python-opendata-transport/ which currently doesn't return *delays* (property is there, but  the underlying API-call to transport.opendata.ch doesn't return anything).
+_**Warning:** Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first._  
+Note that the current implementation is based on https://pypi.org/project/python-opendata-transport/ which currently doesn't return *delays* (property is there, but the underlying API-call to transport.opendata.ch may not always provide them).
 
 ## Configuration
 
@@ -35,22 +35,33 @@ entity:
 
 ### Card settings
 
-* `departure_offset`: an optional number of X minutes (defaults to 0).  If greater than zero minutes, it hides all next departures within those minutes.  Note that the filtering is on the frontend only - so this could lead to an empty stationboard if the sensor doesn't provide enough journeys (`limit` setting of the [stationboard-sensor](https://github.com/neuhausf/swiss-public-transport-mod))
-* `departure_countdown`: an optional number of minutes (defaults to 15).  All departures within this time window will have a countdown displayed onscreen.
-* `show_seconds`: if true, will show seconds in addition to minutes within the countdown.
-* `entity`: which entity (from *swiss-public-transport-mod*) to use as the data source.
-* `hide_title`: hides the title if true.
-* `name_replacement`: Replaces destination by custom text. 
-* `category`: optional regular expression to filter by categories (S-train, Bus, ICE, ...).  i.e. to include multiple categories use the OR operator: `category: B|^ICE$|S`
-* `platform_filter`: optional regular expression to filter by platforms (3, 21, ...).  i.e. to include multiple platforms use the OR operator: `platform_filter: 3|21`
-* `show_last_changed`: if true, shows the last time that the underlying data changed.
-* `minutes_label`: the string denoting minutes in the ETA field.  Defaults to ` min` or ` mins` depending on how many minutes are left.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
-* `seconds_label`: the string denoting seconds in the ETA field.  Defaults to `″`.  Note the whitespace before the word — if your chosen string does not have whitespace, the string will be stuck to the number.
+* `departure_offset`: optional number of minutes (defaults to 0). Hides next departures within this window.
+* `departure_countdown`: optional minutes (defaults to 15). Departures in this window show a countdown.
+* `show_seconds`: show seconds in the countdown when true.
+* `entity`: the sensor (from *swiss-public-transport-mod*) used as data source.
+* `hide_title`: hides the card title when true.
+* `name_replacement`: replace destination names (see examples below).
+* `category`: optional regex to filter by category (e.g. `B|^ICE$|S`).
+* `platform_filter`: optional regex to filter platforms (e.g. `3|21`).
+* `show_last_changed`: shows when the underlying data last changed.
+* `minutes_label`: string for minutes in ETA (defaults to ` min`/` mins`).
+* `seconds_label`: string for seconds in ETA (defaults to `″`).
+* `line_colors`: mapping to override the line background color per line. Keys are the displayed line text (e.g. `S3`, `IR68`) or regex-keys written as strings starting and ending with `/` (for example `/^S\\d+/`). Values are CSS colors (`#RRGGBB`, `rgb()`, color names). Only `background-color` is overridden; other styles remain.
+
+Short example:
+```yaml
+type: 'custom:swiss-stationboard'
+entity: sensor.sbb_stationboard_<id>
+line_colors:
+  S3: "#1E90FF"
+  IR68: "#FF8800"
+  "/^S\\d+/": "#2d327d"
+```
 
 ### Text replacement 
 #### Exact text replacement
 
-Replaces occurrences in the destination name (e.g., `journey.to`). Matching is **literal** (special characters are treated as normal characters).
+Replaces occurrences in the destination name (e.g., `journey.to`). Matching is **literal**.
 
 ```yaml
 type: custom:swiss-stationboard
@@ -66,58 +77,22 @@ entity:
   - sensor.schupfen
 ```
 
-#### Replacement with spaces and special characters (literal match)
-
-If your search text contains spaces, `*`, `:`, `#`, etc., wrap it in quotes (YAML best practice).
-
-```yaml
-type: custom:swiss-stationboard
-name: Departures
-hide_title: true
-name_replacement:
-  "xyz with som*e special chars ...": "xyz short"
-  "Airport Terminal 1": "T1"
-entity:
-  - sensor.schupfen
-```
-
 #### Advanced format: list of replacement rules
 
-Same feature as the mapping object, but expressed as a list (useful if you want to keep a specific order or extend later).
+Also supported as a list of rules (ordered):
 
 ```yaml
-type: custom:swiss-stationboard
-name: Departures
-hide_title: true
 name_replacement:
   - from: Aeroporto
     to: Airprt
   - from: Malpensa
     to: Malp
-entity:
-  - sensor.schupfen
-```
-
-#### Alternative list format (tuples)
-
-A compact list syntax (each rule is a 2-item array).
-
-```yaml
-type: custom:swiss-stationboard
-name: Departures
-hide_title: true
-name_replacement:
-  - ["Aeroporto", "Airprt"]
-  - ["Malpensa", "Malp"]
-entity:
-  - sensor.schupfen
 ```
 
 #### Notes
 
-* Replacements are applied **globally** (all occurrences in the destination string).
-* Matching is **case-sensitive** by default (e.g., `malpensa` won’t match `Malpensa`).
-* Replacement keys are treated as **literal text** (no wildcard/regex behavior).
+* Replacements are applied globally (all occurrences).
+* Matching is case-sensitive by default.
 
 ## Privacy 
 
