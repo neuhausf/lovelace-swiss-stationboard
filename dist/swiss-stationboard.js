@@ -69,7 +69,7 @@ class SwissPublicTransportCard extends LitElement {
                   class="shrink ${departure.delayed}"
                   style="text-align:right;"
                 >
-                 ${departure.delay > 0?html`(+${departure.delay}')`:html``} ${departure.eta}&nbsp;
+                 ${departure.delay > 1?html`(+${departure.delay}')`:html``} ${departure.eta}&nbsp;
                 </td>
                 <td
                   class="shrink ${departure.delayed}"
