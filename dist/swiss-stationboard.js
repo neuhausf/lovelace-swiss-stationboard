@@ -53,6 +53,7 @@ class SwissPublicTransportCard extends LitElement {
                   <span
                     class="line ${departure.category}"
                     title="${departure.exactname}"
+                    style="${this._getLineColorStyle(departure.linename)}"
                     >${departure.linename}</span
                   >
                 </td>
@@ -204,7 +205,7 @@ class SwissPublicTransportCard extends LitElement {
   }
   
   _escapeRegExp(str) {
-    return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return String(str).replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
   }
   
   _applyNameReplacements(text) {
@@ -244,6 +245,45 @@ class SwissPublicTransportCard extends LitElement {
     }
   
     return result;
+  }
+
+  /**
+   * Liefert einen inline style string für die Hintergrundfarbe der Linie (nur background-color),
+   * basierend auf der Konfiguration this._config.line_colors.
+   *
+   * Erlaubte Konfig-Formate:
+   * - Objekt-Mapping: { "S3": "#2d327d", "IR68": "#ff5500" }
+   * - Regex-Keys: { "/^S\\d+/": "#123456" } (Key muss mit / beginnen und enden)
+   *
+   * Rückgabe: z.B. "background-color: #ff0000;" oder leere Zeichenkette wenn kein Override.
+   */
+  _getLineColorStyle(linename) {
+    const cfg = this._config?.line_colors || this._config?.line_color || null;
+    if (!cfg) return "";
+    // Objekt-Mapping (häufigster Fall)
+    if (typeof cfg === "object" && !Array.isArray(cfg)) {
+      // Direktes Match bevorzugen
+      if (Object.prototype.hasOwnProperty.call(cfg, linename) && cfg[linename]) {
+        return `background-color: ${cfg[linename]};`;
+      }
+      // Regex-Keys prüfen (Keys, die mit /.../ angegeben wurden)
+      for (const key of Object.keys(cfg)) {
+        if (!key || key.length < 2) continue;
+        if (key.startsWith("/") && key.endsWith("/")) {
+          try {
+            const pattern = key.slice(1, -1);
+            const re = new RegExp(pattern);
+            if (re.test(linename)) {
+              return `background-color: ${cfg[key]};`;
+            }
+          } catch (e) {
+            // ungültiges regex -> skip
+          }
+        }
+      }
+    }
+    // keine Übereinstimmung
+    return "";
   }
 
   static get styles() {
