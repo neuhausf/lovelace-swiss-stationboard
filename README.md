@@ -37,11 +37,13 @@ entity:
 
 ### Card settings
 
+* `name`: overrides the `friendly_name` inferred from the corresponding entity. Used as title.
 * `departure_offset`: optional number of minutes (defaults to 0). Hides next departures within this window.
 * `departure_countdown`: optional minutes (defaults to 15). Departures in this window show a countdown.
 * `show_seconds`: show seconds in the countdown when true.
 * `entity`: the sensor (from *swiss-public-transport-mod*) used as data source.
 * `hide_title`: hides the card title when true.
+* `vertical_title`: forces a small, vertical title on the left side of the card. The vertical title is also applied, if the card is smaller than 400px (horizontally).
 * `name_replacement`: replace destination names (see examples below).
 * `category`: optional regex to filter by category (e.g. `B|^ICE$|S`).
 * `platform_filter`: optional regex to filter platforms (e.g. `3|21`).
