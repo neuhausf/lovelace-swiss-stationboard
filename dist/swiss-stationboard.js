@@ -125,6 +125,11 @@ class SwissPublicTransportCard extends LitElement {
       const destination = this._applyNameReplacements(journey["to"]);
       const exactname = journey["name"];
 
+      // filter destinations according to config.destination_filter
+      if (this._destinationMatchesFilter(destination)) {
+        continue;
+      }
+
       const category = journey["category"];
       const platform = journey["platform"];
       const linename =
@@ -182,6 +187,15 @@ class SwissPublicTransportCard extends LitElement {
       }
     }
 
+
+    // Optional: limit how many rows are displayed (max_rows)
+    const maxRowsCfg = this._config?.max_rows;
+    if (maxRowsCfg !== undefined && maxRowsCfg !== null) {
+      const maxRows = parseInt(maxRowsCfg, 10);
+      if (!isNaN(maxRows) && maxRows > 0) {
+        departures = departures.slice(0, maxRows);
+      }
+    }
     this.departures = departures;
   }
 
@@ -216,7 +230,7 @@ class SwissPublicTransportCard extends LitElement {
   
     let result = String(text);
   
-    // Variant: Mapping-Objekt { "Aeroporto": "Airprt", ... }
+    // Variant: mapping object { "Aeroporto": "Airprt", ... }
     if (!Array.isArray(cfg) && typeof cfg === "object") {
       for (const [from, to] of Object.entries(cfg)) {
         if (from === "" || from === undefined || from === null) continue;
@@ -226,7 +240,7 @@ class SwissPublicTransportCard extends LitElement {
       return result;
     }
   
-    // Variant: List [{from,to}, ...] or [["from","to"], ...]
+    // Variant: list [{from,to}, ...] or [["from","to"], ...]
     if (Array.isArray(cfg)) {
       for (const rule of cfg) {
         if (!rule) continue;
@@ -246,27 +260,26 @@ class SwissPublicTransportCard extends LitElement {
   
     return result;
   }
-
   /**
-   * Liefert einen inline style string für die Hintergrundfarbe der Linie (nur background-color),
-   * basierend auf der Konfiguration this._config.line_colors.
+   * Returns an inline style string for the line background color (background-color only),
+   * based on the configuration this._config.line_colors.
    *
-   * Erlaubte Konfig-Formate:
-   * - Objekt-Mapping: { "S3": "#2d327d", "IR68": "#ff5500" }
-   * - Regex-Keys: { "/^S\\d+/": "#123456" } (Key muss mit / beginnen und enden)
+   * Supported config formats:
+   * - Object mapping: { "S3": "#2d327d", "IR68": "#ff5500" }
+   * - Regex keys: { "/^S\\d+/": "#123456" } (key must start and end with /)
    *
-   * Rückgabe: z.B. "background-color: #ff0000;" oder leere Zeichenkette wenn kein Override.
+   * Returns: e.g. "background-color: #ff0000;" or an empty string if there is no override.
    */
   _getLineColorStyle(linename) {
     const cfg = this._config?.line_colors || this._config?.line_color || null;
     if (!cfg) return "";
-    // Objekt-Mapping (häufigster Fall)
+    // Object mapping (most common case)
     if (typeof cfg === "object" && !Array.isArray(cfg)) {
-      // Direktes Match bevorzugen
+      // Prefer direct matches
       if (Object.prototype.hasOwnProperty.call(cfg, linename) && cfg[linename]) {
         return `background-color: ${cfg[linename]};`;
       }
-      // Regex-Keys prüfen (Keys, die mit /.../ angegeben wurden)
+      // Check regex keys (keys provided as /.../)
       for (const key of Object.keys(cfg)) {
         if (!key || key.length < 2) continue;
         if (key.startsWith("/") && key.endsWith("/")) {
@@ -277,13 +290,64 @@ class SwissPublicTransportCard extends LitElement {
               return `background-color: ${cfg[key]};`;
             }
           } catch (e) {
-            // ungültiges regex -> skip
+            // Invalid regex -> skip
           }
         }
       }
     }
-    // keine Übereinstimmung
+    // No match
     return "";
+  }
+  /**
+   * Checks whether a destination should be excluded via this._config.destination_filter.
+   * destination_filter can be:
+   * - String: exact match (case-sensitive) or regex string "/pattern/flags"
+   * - Array of strings / regex strings
+   * - RegExp object
+   */
+  _destinationMatchesFilter(destination) {
+    if (destination === undefined || destination === null) return false;
+    const cfg = this._config?.destination_filter;
+    if (!cfg) return false;
+
+    const checkItem = (item) => {
+      if (item === undefined || item === null) return false;
+      // if RegExp object
+      if (item instanceof RegExp) {
+        try {
+          return item.test(String(destination));
+        } catch (e) {
+          return false;
+        }
+      }
+      // string
+      const s = String(item);
+      if (s.length >= 2 && s.startsWith("/")) {
+        // treat as regex with optional flags: /pattern/flags
+        const lastSlash = s.lastIndexOf("/");
+        if (lastSlash > 0) {
+          const pattern = s.slice(1, lastSlash);
+          const flags = s.slice(lastSlash + 1);
+          try {
+            const re = new RegExp(pattern, flags);
+            return re.test(String(destination));
+          } catch (e) {
+            return false;
+          }
+        }
+      }
+      // exact match
+      return String(destination) === s;
+    };
+
+    if (Array.isArray(cfg)) {
+      for (const it of cfg) {
+        if (checkItem(it)) return true;
+      }
+      return false;
+    } else {
+      return checkItem(cfg);
+    }
   }
 
   static get styles() {
