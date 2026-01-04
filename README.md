@@ -25,6 +25,8 @@ name: Abfahrt
 hide_title: true
 platform_filter: 21
 category: B|^ICE$|S
+destination_filter: Bern|Zürich
+max_rows: 6
 name_replacement:
   Aeroporto: Airprt
   Malpensa: Malp
@@ -47,11 +49,18 @@ entity:
 * `minutes_label`: string for minutes in ETA (defaults to ` min`/` mins`).
 * `seconds_label`: string for seconds in ETA (defaults to `″`).
 * `line_colors`: mapping to override the line background color per line. Keys are the displayed line text (e.g. `S3`, `IR68`) or regex-keys written as strings starting and ending with `/` (for example `/^S\\d+/`). Values are CSS colors (`#RRGGBB`, `rgb()`, color names). Only `background-color` is overridden; other styles remain.
+* `destination_filter`: optional regex to filter by destination. Can be a single regex string (e.g. `Bern|Zürich`) or a list of regex strings (e.g. `["Bern", "Zürich", "^Basel"]`). If a list is provided, a connection matches when any entry matches.
+* `max_rows`: optional number (defaults to 0). Limits the number of rows shown (0 = unlimited).
 
 Short example:
 ```yaml
 type: 'custom:swiss-stationboard'
 entity: sensor.sbb_stationboard_<id>
+destination_filter:
+  - Bern
+  - Zürich
+  - "^Basel"
+max_rows: 8
 line_colors:
   S3: "#1E90FF"
   IR68: "#FF8800"
