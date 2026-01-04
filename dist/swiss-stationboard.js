@@ -9,6 +9,26 @@ class SwissPublicTransportCard extends LitElement {
     return "swiss-stationboard";
   }
 
+  constructor() {
+    super();
+    this.departures = [];
+    this._isNarrow = false;
+    this._resizeObserver = null;
+    this._onWindowResize = null;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback?.();
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+    if (this._onWindowResize) {
+      window.removeEventListener("resize", this._onWindowResize);
+      this._onWindowResize = null;
+    }
+  }
+
   render() {
     if (!this._config || !this.hass) {
       return html``;
@@ -27,27 +47,35 @@ class SwissPublicTransportCard extends LitElement {
         >
       `;
     }
+
     this._update_departures(state);
-    return html`
-      <ha-card id="hacard">
-        ${this._config.hide_title
-          ? html``
-          : html`<div class="card-header">
-          ${state.attributes.friendly_name}
-          ${this._config.show_last_changed
-            ? html`
-            <div class="name">
-              'N/A'
-            </div>`
-            : html``
-          }`
-        }     
-         
-        </div>
-        <table>
-          <tbody id="departuretable">
+
+    const showTitle = !this._config.hide_title;
+    const forceVertical = this._config.vertical_title === true;
+    const verticalTitle = showTitle && (forceVertical || this._isNarrow);
+
+    const baseTitle =
+      this._config.name !== undefined &&
+      this._config.name !== null &&
+      String(this._config.name).trim() !== ""
+        ? this._config.name
+        : state.attributes.friendly_name;
+    
+    const titleText = verticalTitle ? `🚆 ${baseTitle}` : baseTitle;
+    
+    const titleInner = html`
+      ${baseTitle}
+      ${this._config.show_last_changed
+        ? html`<div class="name">N/A</div>`
+        : html``}
+    `;
+
+
+    const table = html`
+      <table>
+        <tbody id="departuretable">
           ${this.departures.map(
-            departure => html`
+            (departure) => html`
               <tr>
                 <td class="shrink" style="text-align:left;">
                   <span
@@ -65,27 +93,41 @@ class SwissPublicTransportCard extends LitElement {
                   ${departure.departure_time}
                 </td>
                 <td class="expand ${departure.delayed}">${departure.destination}</td>
-                <td
-                  class="shrink ${departure.delayed}"
-                  style="text-align:right;"
-                >
-                 ${departure.delay > 0?html`(+${departure.delay}')`:html``} ${departure.eta}&nbsp;
+                <td class="shrink ${departure.delayed}" style="text-align:right;">
+                  ${departure.delay > 0 ? html`(+${departure.delay}')` : html``}
+                  ${departure.eta}&nbsp;
                 </td>
-                <td
-                  class="shrink ${departure.delayed}"
-                  style="text-align:right;"
-                >
-                ${departure.platform
-                  ? html`
-                  ${this._config.platform_name ? html`${this._config.platform_name}&nbsp`:html``}${departure.platform}`
-                  : html``
-                 }
+                <td class="shrink ${departure.delayed}" style="text-align:right;">
+                  ${departure.platform
+                    ? html`${this._config.platform_name
+                        ? html`${this._config.platform_name}&nbsp`
+                        : html``}${departure.platform}`
+                    : html``}
                 </td>
               </tr>
             `
           )}
-          </tbody>
-        </table>
+        </tbody>
+      </table>
+    `;
+
+    return html`
+      <ha-card id="hacard" class="${verticalTitle ? "vertical-title" : ""}">
+        ${showTitle
+          ? verticalTitle
+            ? html`
+                <div class="vtitle">
+                  <div class="card-header vertical">${titleInner}</div>
+                </div>
+                <div class="content">
+                  ${table}
+                </div>
+              `
+            : html`
+                <div class="card-header">${titleInner}</div>
+                ${table}
+              `
+          : html`${table}`}
       </ha-card>
     `;
   }
@@ -102,7 +144,8 @@ class SwissPublicTransportCard extends LitElement {
       _config: {
         type: Object
       },
-      showConfig: Boolean
+      showConfig: Boolean,
+      _isNarrow: { type: Boolean }
     };
   }
 
@@ -221,8 +264,33 @@ class SwissPublicTransportCard extends LitElement {
       setInterval(() => this.requestUpdate(), 1000);
     else
       setInterval(() => this.requestUpdate(), 10000);
+
+    // Detect narrow cards (<400px) to enable vertical title mode automatically
+    const card = this.shadowRoot?.getElementById("hacard");
+    if (!card) return;
+
+    const update = () => {
+      const width = card.getBoundingClientRect().width || 0;
+      const narrow = width > 0 && width < 400;
+      if (narrow !== this._isNarrow) this._isNarrow = narrow;
+    };
+
+    if (typeof ResizeObserver !== "undefined") {
+      if (!this._resizeObserver) {
+        this._resizeObserver = new ResizeObserver(() => update());
+        this._resizeObserver.observe(card);
+      }
+      update();
+    } else {
+      // Fallback for older browsers
+      if (!this._onWindowResize) {
+        this._onWindowResize = () => update();
+        window.addEventListener("resize", this._onWindowResize, { passive: true });
+      }
+      update();
+    }
   }
-  
+
   _escapeRegExp(str) {
     return String(str).replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
   }
@@ -357,6 +425,42 @@ class SwissPublicTransportCard extends LitElement {
 
   static get styles() {
     return css`
+      .card-header {
+        padding: 12px 16px 0 16px;
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      ha-card.vertical-title {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+      }
+      ha-card.vertical-title .vtitle {
+        flex: 0 0 auto;
+        padding: 12px 0 12px 0px;
+        display: flex;
+        align-items: flex-start;
+      }
+      ha-card.vertical-title .content {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      ha-card.vertical-title .content table {
+        padding-left: 0;
+      }
+      ha-card.vertical-title .card-header {
+        padding: 0;
+      }
+      ha-card.vertical-title .card-header.vertical {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 14px;
+        font-weight: 400;
+        /* transform-origin: top left; */
+        white-space: nowrap;
+      }
+
       .name {
         line-height: normal;
         font-size: 16px;
