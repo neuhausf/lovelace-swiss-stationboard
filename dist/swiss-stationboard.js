@@ -122,14 +122,19 @@ class SwissPublicTransportCard extends LitElement {
     }
 
     for (const journey of state.attributes["departures"]) {
-      const destination = this._applyNameReplacements(journey["to"]);
-      const exactname = journey["name"];
-
-      // filter destinations according to config.destination_filter
-      if (this._destinationMatchesFilter(destination)) {
+      const rawDestination = journey["to"];
+      const destination = this._applyNameReplacements(rawDestination);
+      
+      // normalize for matching
+      const rawNorm = String(rawDestination ?? "").trim();
+      const destNorm = String(destination ?? "").trim();
+      
+      // exclude if either raw or displayed destination matches filter
+      if (this._destinationMatchesFilter(rawNorm) || this._destinationMatchesFilter(destNorm)) {
         continue;
       }
 
+      const exactname = journey["name"];
       const category = journey["category"];
       const platform = journey["platform"];
       const linename =
